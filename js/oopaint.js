@@ -1,8 +1,12 @@
-var o_currentColor = "blue";
-var o_lineWidth = 10;
-var maincanvas,tempcanvas;
-var maincontext,tempcontext;
 
+
+if(window.addEventListener) {
+    window.addEventListener('load', function () {
+        var o_currentColor = "blue";
+        var o_lineWidth = 10;
+        var maincanvas,tempcanvas;
+        var maincontext,tempcontext;
+        var kassinn;
 var ShapeBase = Base.extend({
     constructor:function(x,y, color, lineWidth) {
         o_currentColor = color;
@@ -14,6 +18,7 @@ var ShapeBase = Base.extend({
         this.yEnd=y;
     },
     calcbounds:function() {
+        console.log(this.xEnd,this.yEnd,w,h);
         var xEnd = Math.min(this.x,this.xEnd);
         var yEnd = Math.min(this.y,this.yEnd);
         var w = Math.abs(this.x-this.xEnd);
@@ -36,11 +41,11 @@ var Rectangle = ShapeBase.extend({
         ctx.strokestyle = this.color;
         ctx.lineWidth = this.lineWidth;
         var bounds = this.calcbounds();
+       //console.log(bounds.x, bounds.y, bounds.width, bounds.height);
         ctx.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height);
     }
 
 });
-
 
 function ev_canvas (ev) {
     if (ev.layerX || ev.layerX == 0) { // Firefox
@@ -52,14 +57,35 @@ function ev_canvas (ev) {
     }
 
     // Call the event handler of the tool.
-    var kassinn = new tools.rectangle();
+
 
     var func = kassinn[ev.type];
     if (func) {
         func(ev);
     }
 };
+        function init () {
+            var tools = {};
 
+//MAINCANVAS
+            maincanvas = document.getElementById('imageView');
+            maincontext = maincanvas.getContext('2d');
+
+
+
+//TEMP CANVAS+CONTEXT
+            var container = maincanvas.parentNode;
+            tempcanvas = document.createElement('canvas');
+            tempcanvas.id     = 'imageTemp';
+            tempcanvas.width  = maincanvas.width;
+            tempcanvas.height = maincanvas.height;
+            container.appendChild(tempcanvas);
+            tempcontext = tempcanvas.getContext('2d');
+            container.appendChild(tempcanvas);
+            tempcanvas.addEventListener('mousedown', ev_canvas, false);
+            tempcanvas.addEventListener('mousemove', ev_canvas, false);
+            tempcanvas.addEventListener('mouseup',   ev_canvas, false);
+        }
 var tools = {};
 tools.rectangle = function () {
     var tool = this;
@@ -80,9 +106,9 @@ tools.rectangle = function () {
         if (!tool.started) {
             return;
         }
-       var rectangle = new Rectangle(tool.x0,tool.y0,o_currentColor,o_lineWidth);
-       tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
-       rectangle.draw(tempcontext);
+        var rectangle = new Rectangle(tool.x0,tool.y0,ev._x,ev._y,"blue",o_lineWidth);
+        tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+        rectangle.draw(tempcontext);
         console.log("mousemove");
     };
 
@@ -103,33 +129,17 @@ function updateSurface () {
     tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
 };
 
-//MAINCANVAS
-maincanvas = document.getElementById('imageView');
-maincontext = maincanvas.getContext('2d');
 
 
+        kassinn = new tools.rectangle();
+init();
 
-//TEMP CANVAS+CONTEXT
-var container = maincanvas.parentNode;
-tempcanvas = document.createElement('canvas');
-tempcanvas.id     = 'imageTemp';
-tempcanvas.width  = maincanvas.width;
-tempcanvas.height = maincanvas.height;
-container.appendChild(tempcanvas);
-tempcontext = tempcanvas.getContext('2d');
-container.appendChild(tempcanvas);
-tempcanvas.addEventListener('mousedown', ev_canvas, false);
-tempcanvas.addEventListener('mousemove', ev_canvas, false);
-tempcanvas.addEventListener('mouseup',   ev_canvas, false);
+        var kassi = new Rectangle(200,200,50,50,"black",10);
+        kassi.draw(maincontext);
 
+        function createRect(x, y) {
+            return new Rectangle(x,y, o_currentColor, o_lineWidth);
+        }
 
-var kassi = new Rectangle(200,200,50,50,"black",10);
-kassi.draw(maincontext);
-
-function createRect(x, y) {
-    return new Rectangle(x,y, o_currentColor, o_lineWidth);
-}
-
-var s = new ShapeBase();
-
-
+        var s = new ShapeBase();
+}, false); }
