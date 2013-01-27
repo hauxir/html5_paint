@@ -50,7 +50,7 @@ if(window.addEventListener) {
         var tools = {};
         // The drawing pencil.
         tools.pencil = function () {
-            var tool = this;
+                var tool = this;
             this.started = false;
 
             // This is called when you start holding down the mouse button.
