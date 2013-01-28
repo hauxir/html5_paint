@@ -88,8 +88,12 @@ var ShapeBase = Base.extend({
     },
     draw: function () {},
     isPointInShape: function (x, y) {
-        if (x > this.x && x < this.xEnd) {
-            if (y > this.y && y < this.yEnd) {
+        var minx = Math.min(this.x,this.xEnd);
+        var maxx = Math.max(this.x,this.xEnd);
+        var miny = Math.min(this.y,this.yEnd);
+        var maxy = Math.max(this.y,this.yEnd);
+        if (x > minx && x < maxx) {
+            if (y > miny && y < maxy) {
                 return true;
             }
         }
