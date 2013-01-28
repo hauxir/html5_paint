@@ -30,12 +30,22 @@ $("document").ready(function () {
     tempcanvas.addEventListener('mouseup', ev_canvas, false);
     p_mouseEvents = new paintMouseEvents();
     $('#colorp').ColorPicker({
-        flat:true,
+        color: '#0000ff',
+        onShow: function (colpkr) {
+            $(colpkr).fadeIn(500);
+            return false;
+        },
+        onHide: function (colpkr) {
+            $(colpkr).fadeOut(500);
+            return false;
+        },
         onChange: function (hsb, hex, rgb) {
+            $('#colorp div').css('backgroundColor', '#' + hex);
             o_currentColor = "#" + hex;
         }
     });
     o_currentColor = $(".colorpicker_hex input").val();
+    $('#colorp div').css('backgroundColor', '#' + o_currentColor);
 
 });
 
@@ -92,8 +102,8 @@ var ShapeBase = Base.extend({
         var maxx = Math.max(this.x,this.xEnd);
         var miny = Math.min(this.y,this.yEnd);
         var maxy = Math.max(this.y,this.yEnd);
-        if (x > minx && x < maxx) {
-            if (y > miny && y < maxy) {
+        if (x > minx-10 && x < maxx+10) {
+            if (y > miny-10 && y < maxy+10) {
                 return true;
             }
         }
@@ -139,6 +149,25 @@ var Line = ShapeBase.extend({
     }
 });
 
+var Circle = ShapeBase.extend({
+    constructor: function (x, y, x2, y2, color, lineWidth) {
+        this.base(x, y, color, lineWidth);
+        this.xEnd = x2;
+        this.yEnd = y2;
+    },
+    draw: function (ctx) {
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = this.lineWidth;
+        ctx.beginPath();
+        var startPoint = (Math.PI/180)*0;
+        var endPoint = (Math.PI/180)*360;
+        ctx.beginPath();
+        var bounds = this.calcbounds();
+        ctx.arc(bounds.x,bounds.y,bounds.width,startPoint,endPoint,true);
+        ctx.stroke();
+        ctx.closePath();
+    }
+});
 var Pencil = ShapeBase.extend({
     constructor: function (color, lineWidth) {
         this.base(-Infinity, -Infinity, color, lineWidth);
@@ -264,7 +293,7 @@ function paintMouseEvents() {
         } else if (o_CurrentTool === "line") {
             currentTool = new Line(tool.x0, tool.y0, ev._x, ev._y, o_currentColor, o_lineWidth);
         } else if (o_CurrentTool === "circle") {
-
+            currentTool = new Circle(tool.prevX,tool.prevY,ev._x,ev._y,o_currentColor,o_lineWidth);
         } else if (o_CurrentTool === "pencil") {
             tool.points.push({
                 x: ev._x,
