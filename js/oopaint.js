@@ -196,6 +196,23 @@ var Circle = ShapeBase.extend({
     }
 });
 
+var Text = ShapeBase.extend({
+    constructor: function(x, y, x2, y2, color, lineWidth) {
+        this.base(x, y, color, lineWidth);
+        this.inputText;
+        this.xEnd = x2;
+        this.yEnd = y2;
+    },
+    draw: function(ctx) {
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = this.lineWidth;
+        ctx.font = '40px san-serif';
+        var bounds = this.calcbounds()
+        ctx.textBaseline = "top";
+        ctx.strokeText(this.inputText, bounds.x, bounds.y);
+    }
+})
+
 var Pencil = ShapeBase.extend({
     constructor: function (color, lineWidth) {
         this.base(-Infinity, -Infinity, color, lineWidth);
@@ -323,7 +340,10 @@ function paintMouseEvents() {
             currentTool = new Line(tool.x0, tool.y0, ev._x, ev._y, o_currentColor, o_lineWidth);
         } else if (o_CurrentTool === "circle") {
             currentTool = new Circle(tool.prevX,tool.prevY,ev._x,ev._y,o_currentColor,o_lineWidth);
-        } else if (o_CurrentTool === "pencil") {
+        } else if (o_CurrentTool === "text") {
+            currentTool = new Text(tool.x0, tool.y0, ev._x, ev._y, o_currentColor, o_lineWidth);
+        }
+        else if (o_CurrentTool === "pencil") {
             tool.points.push({
                 x: ev._x,
                 y: ev._y
