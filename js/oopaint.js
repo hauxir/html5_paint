@@ -161,10 +161,10 @@ var Circle = ShapeBase.extend({
         ctx.beginPath();
         var startPoint = (Math.PI/180)*0;
         var endPoint = (Math.PI/180)*360;
-        ctx.beginPath();
         var bounds = this.calcbounds();
         console.log(bounds.width,bounds.height);
-        ctx.arc(bounds.x+bounds.width/2,bounds.y+bounds.height/2,1.25*bounds.width/Math.PI,startPoint,endPoint,true);
+        var radius = 1.25*bounds.width/Math.PI;
+        ctx.arc(bounds.x+bounds.width/2,bounds.y+bounds.height/2,radius,startPoint,endPoint,true);
         ctx.stroke();
         ctx.closePath();
     }
@@ -294,7 +294,9 @@ function paintMouseEvents() {
         } else if (o_CurrentTool === "line") {
             currentTool = new Line(tool.x0, tool.y0, ev._x, ev._y, o_currentColor, o_lineWidth);
         } else if (o_CurrentTool === "circle") {
-            currentTool = new Circle(tool.prevX,tool.prevY,ev._x,ev._y,o_currentColor,o_lineWidth);
+            var hlutfall = ev._x / tool.prevX;
+            var yvalue = tool.prevY * hlutfall;
+            currentTool = new Circle(tool.prevX,yvalue,ev._x,ev._y,o_currentColor,o_lineWidth);
         } else if (o_CurrentTool === "pencil") {
             tool.points.push({
                 x: ev._x,
