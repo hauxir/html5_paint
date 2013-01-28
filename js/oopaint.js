@@ -163,7 +163,8 @@ var Circle = ShapeBase.extend({
         var endPoint = (Math.PI/180)*360;
         ctx.beginPath();
         var bounds = this.calcbounds();
-        ctx.arc(bounds.x,bounds.y,bounds.width,startPoint,endPoint,true);
+        console.log(bounds.width,bounds.height);
+        ctx.arc(bounds.x+bounds.width/2,bounds.y+bounds.height/2,1.25*bounds.width/Math.PI,startPoint,endPoint,true);
         ctx.stroke();
         ctx.closePath();
     }
