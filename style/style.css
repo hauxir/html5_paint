@@ -16,3 +16,28 @@
     height: 30px;
     background: url(../images/select.png) center;
 }
+canvas {
+    cursor:crosshair;
+}
+canvas,canvas:active,canvas:focus {
+    cursor:crosshair;
+}
+
+.colorpicker {
+    z-index: 9999;
+}
+#colorp select  {
+    margin-left:100px;
+    display:inline-block;
+    margin-bottom:20px;
+}
+
+#boards li a {
+    text-decoration:underline;
+    color:blue;
+
+}
+
+#boards li a:focus{
+    cursor:hand;
+}

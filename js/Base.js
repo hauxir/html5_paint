@@ -102,7 +102,6 @@ Base.prototype = {
         return this;
     }
 };
-
 // initialise
 Base = Base.extend({
     constructor: function() {

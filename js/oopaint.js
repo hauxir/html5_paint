@@ -5,7 +5,12 @@ var maincontext, tempcontext;
 var o_CurrentTool;
 var p_mouseEvents;
 var p_drawnShapes = [];
+for (var i = 0; i < 10; i++) {
+    p_drawnShapes[i] = [];
+}
+
 var prev = [];
+var currentBoard = 0;
 
 $("document").ready(function () {
     o_CurrentTool = $("#currentShape").val();
@@ -32,11 +37,11 @@ $("document").ready(function () {
     $('#colorp').ColorPicker({
         color: '#0000ff',
         onShow: function (colpkr) {
-            $(colpkr).fadeIn(500);
+            $(colpkr).fadeIn(0);
             return false;
         },
         onHide: function (colpkr) {
-            $(colpkr).fadeOut(500);
+            $(colpkr).fadeOut(0);
             return false;
         },
         onChange: function (hsb, hex, rgb) {
@@ -46,16 +51,24 @@ $("document").ready(function () {
     });
     o_currentColor = $(".colorpicker_hex input").val();
     $('#colorp div').css('backgroundColor', '#' + o_currentColor);
-
+    $("#boards li a").click( function() {
+        var num = parseInt($(this).attr("id").substring(1));
+        changeBoard(num);
+    });
 });
 
 
+function changeBoard(boardnum) {
+    currentBoard = boardnum;
+    console.log(boardnum,currentBoard);
+    redraw();
+};
 
 //UNDO
 $(document).keydown(function (e) {
     if (e.keyCode == 90 && e.ctrlKey)
     {
-        prev.push(p_drawnShapes.pop());
+        prev.push(p_drawnShapes[currentBoard].pop());
         redraw();
     }
 });
@@ -64,7 +77,7 @@ $(document).keydown(function (e) {
 $(document).keydown(function (e) {
     if (e.keyCode == 89 && e.ctrlKey)
     {
-        p_drawnShapes.push(prev.pop());
+        p_drawnShapes[currentBoard].push(prev.pop());
         redraw();
     }
 });
@@ -162,13 +175,27 @@ var Circle = ShapeBase.extend({
         var startPoint = (Math.PI/180)*0;
         var endPoint = (Math.PI/180)*360;
         var bounds = this.calcbounds();
-        console.log(bounds.width,bounds.height);
-        var radius = 1.25*bounds.width/Math.PI;
-        ctx.arc(bounds.x+bounds.width/2,bounds.y+bounds.height/2,radius,startPoint,endPoint,true);
+        var radius = bounds.width/Math.PI;
+        ctx.arc(bounds.x+bounds.width/2,bounds.y+bounds.height/2,bounds.width/2,startPoint,endPoint,true);
         ctx.stroke();
         ctx.closePath();
+    },
+    calcbounds: function () {
+        var xEnd = Math.min(this.x, this.xEnd);
+        var yEnd = Math.min(this.y, this.yEnd);
+        var w = Math.abs(this.x - this.xEnd);
+        var h = Math.abs(this.y - this.yEnd);
+        if(h<w) { w=h;}
+        else if(w<h) {h=w};
+        return {
+            x: xEnd,
+            y: yEnd,
+            width: w,
+            height: h
+        }
     }
 });
+
 var Pencil = ShapeBase.extend({
     constructor: function (color, lineWidth) {
         this.base(-Infinity, -Infinity, color, lineWidth);
@@ -260,13 +287,14 @@ function paintMouseEvents() {
     tool.prevY;
 
     this.mousedown = function (ev) {
+        $(this).css('cursor', 'crosshair');
         tool.prevX = ev._x;
         tool.prevY = ev._y;
         if (o_CurrentTool === "select") {
-            for (var s in p_drawnShapes) {
-                if (p_drawnShapes[s].isPointInShape(ev._x, ev._y)) {
-                    tool.selected = p_drawnShapes[s];
-                    var bounds = p_drawnShapes[s].calcbounds();
+            for (var s in p_drawnShapes[currentBoard]) {
+                if (p_drawnShapes[currentBoard][s].isPointInShape(ev._x, ev._y)) {
+                    tool.selected = p_drawnShapes[currentBoard][s];
+                    var bounds = p_drawnShapes[currentBoard][s].calcbounds();
                     tempcontext.strokeStyle = "#F4D71D";
                     tempcontext.strokeRect(bounds.x - 3, bounds.y - 3, bounds.width + 6, bounds.height + 6);
                     tool.started = true;
@@ -294,9 +322,7 @@ function paintMouseEvents() {
         } else if (o_CurrentTool === "line") {
             currentTool = new Line(tool.x0, tool.y0, ev._x, ev._y, o_currentColor, o_lineWidth);
         } else if (o_CurrentTool === "circle") {
-            var hlutfall = ev._x / tool.prevX;
-            var yvalue = tool.prevY * hlutfall;
-            currentTool = new Circle(tool.prevX,yvalue,ev._x,ev._y,o_currentColor,o_lineWidth);
+            currentTool = new Circle(tool.prevX,tool.prevY,ev._x,ev._y,o_currentColor,o_lineWidth);
         } else if (o_CurrentTool === "pencil") {
             tool.points.push({
                 x: ev._x,
@@ -334,7 +360,9 @@ function paintMouseEvents() {
             return;
         }
         if (tool.started) {
-            p_drawnShapes.push(tool.drawnshape);
+            if(tool.drawnshape) {
+                p_drawnShapes[currentBoard].push(tool.drawnshape);
+            }
             tool.mousemove(ev);
             tool.started = false;
             updateSurface();
@@ -350,7 +378,7 @@ function updateSurface() {
 
 function redraw() {
     maincontext.clearRect(0, 0, maincanvas.width, maincanvas.height);
-    for (var s in p_drawnShapes) {
-        p_drawnShapes[s].draw(maincontext);
+    for (var s in p_drawnShapes[currentBoard]) {
+        p_drawnShapes[currentBoard][s].draw(maincontext);
     }
 };
