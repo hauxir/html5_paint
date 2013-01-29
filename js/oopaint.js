@@ -4,6 +4,7 @@ var maincanvas, tempcanvas;
 var maincontext, tempcontext;
 var o_CurrentTool;
 var p_mouseEvents;
+var my_templates = [];
 var p_drawnShapes = [];
 for (var i = 0; i < 10; i++) {
     p_drawnShapes[i] = [];
@@ -60,6 +61,17 @@ $("document").ready(function () {
         fontSize--;
         $("#texti").css("font-size",fontSize + "px");
     });
+    $("#add_template").click(function() {
+       drawTemplate();
+    });
+    $("#export").click(function() {
+        var encoded = Base64.encode(JSON.stringify(p_drawnShapes));
+        var decoded = Base64.decode(encoded);
+        console.log(encoded);
+        $("#download").attr("href","data:application/octet-stream;charset=utf-8;base64," + encoded,"skra");
+        $("#download").attr("download","Untitled2.txt");
+        window.location = document.getElementById('download').href;
+    });
     //MAINCANVAS
     maincanvas = document.getElementById('imageView');
     maincontext = maincanvas.getContext('2d');
@@ -112,7 +124,10 @@ function changeBoard(boardnum) {
 $(document).keydown(function (e) {
     if (e.keyCode == 90 && e.ctrlKey)
     {
-        prev.push(p_drawnShapes[currentBoard].pop());
+        var value = p_drawnShapes[currentBoard].pop();
+        if(value) {
+        prev.push(value);
+        }
         tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
         redraw();
     }
@@ -122,7 +137,10 @@ $(document).keydown(function (e) {
 $(document).keydown(function (e) {
     if (e.keyCode == 89 && e.ctrlKey)
     {
-        p_drawnShapes[currentBoard].push(prev.pop());
+        var value = prev.pop();
+        if(value) {
+            p_drawnShapes[currentBoard].push(value);
+        }
         tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
         redraw();
     }
@@ -138,6 +156,7 @@ var ShapeBase = Base.extend({
         this.y = y;
         this.xEnd = x;
         this.yEnd = y;
+        this.type = "Shape";
     },
     calcbounds: function () {
         var xEnd = Math.min(this.x, this.xEnd);
@@ -181,6 +200,7 @@ var Rectangle = ShapeBase.extend({
         this.base(x, y, color, lineWidth);
         this.xEnd = x2;
         this.yEnd = y2;
+        this.type = "Rectangle";
     },
     draw: function (ctx) {
         ctx.strokeStyle = this.color;
@@ -195,6 +215,7 @@ var Line = ShapeBase.extend({
         this.base(x, y, color, lineWidth);
         this.xEnd = x2;
         this.yEnd = y2;
+        this.type = "Line";
     },
     draw: function (ctx) {
         ctx.strokeStyle = this.color;
@@ -213,6 +234,7 @@ var Circle = ShapeBase.extend({
         this.base(x, y, color, lineWidth);
         this.xEnd = x2;
         this.yEnd = y2;
+        this.type = "Circle";
     },
     draw: function (ctx) {
         ctx.strokeStyle = this.color;
@@ -254,6 +276,7 @@ var Text = ShapeBase.extend({
         var fs = parseInt(this.fontSize.replace("px",""));
         this.xEnd = this.x + (this.inputText.length*fs)/1.5;
         this.yEnd = this.y+fs;
+        this.type = "Text";
     },
     draw: function(ctx) {
         ctx.strokeStyle = this.color;
@@ -302,6 +325,7 @@ var Text = ShapeBase.extend({
 var Pencil = ShapeBase.extend({
     constructor: function (color, lineWidth) {
         this.base(-Infinity, -Infinity, color, lineWidth);
+        this.type = "Pencil";
     },
     draw: function (ctx) {
         ctx.strokeStyle = this.color;
@@ -363,6 +387,7 @@ var Pencil = ShapeBase.extend({
 function Template(name,shapes) {
     this.name = name;
     this.shapes = shapes;
+    console.log(this);
 }
 
 function ev_canvas(ev) {
@@ -382,16 +407,23 @@ function ev_canvas(ev) {
         func(ev);
     }
 };
-function get_type(thing){
-    if(thing===null)return "[object Null]"; // special case
-    return Object.prototype.toString.call(thing);
-}
 function createTemplate(shapes){
     var name=prompt("Please select a name for your template","Untitled");
     var template = new Template(name,shapes);
     var option = $("<option></option>");
+    option.attr("value",my_templates.length);
+    my_templates.push(template);
     option.html(name);
     $("#templates").append(option);
+}
+function drawTemplate() {
+    var selected = parseInt($("#templates :selected").val());
+    var currentTemplate = my_templates[selected];
+    var shapes = currentTemplate.shapes;
+    for(var i in shapes) {
+        p_drawnShapes[currentBoard].push(shapes[i]);
+        shapes[i].draw(maincontext);
+    }
 }
 function paintMouseEvents() {
     var tool = this;

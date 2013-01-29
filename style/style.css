@@ -121,4 +121,7 @@ a.tip2:hover span:after {
 
 #goat {
     margin: 10px;
+    display:none;
+}
+#download {
 }
