@@ -8,11 +8,14 @@ var p_drawnShapes = [];
 for (var i = 0; i < 10; i++) {
     p_drawnShapes[i] = [];
 }
-
+var ctrl_down = false;
 var prev = [];
 var currentBoard = 0;
 
 $("document").ready(function () {
+    $(document).bind('keydown', 'Ctrl', function() {ctrl_down = true;});
+    $(document).bind('keyup', 'Ctrl', function() {ctrl_down = false;});
+
     $("#text_formatter").hide();
     $("#texti").css("font-family",$('#fontselector').val() );
     o_CurrentTool = $("#currentShape").val();
@@ -25,7 +28,7 @@ $("document").ready(function () {
         else {
             $("#container canvas").css("cursor","crosshair");
         }
-        p_mouseEvents = new paintMouseEvents();
+        //p_mouseEvents = new paintMouseEvents();
     });
     $('#fontselector').change(function () {
         $("#texti").css("font-family",$('#fontselector').val() );
@@ -101,6 +104,7 @@ $("document").ready(function () {
 
 function changeBoard(boardnum) {
     currentBoard = boardnum;
+    tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
     redraw();
 };
 
@@ -109,6 +113,7 @@ $(document).keydown(function (e) {
     if (e.keyCode == 90 && e.ctrlKey)
     {
         prev.push(p_drawnShapes[currentBoard].pop());
+        tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
         redraw();
     }
 });
@@ -118,6 +123,7 @@ $(document).keydown(function (e) {
     if (e.keyCode == 89 && e.ctrlKey)
     {
         p_drawnShapes[currentBoard].push(prev.pop());
+        tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
         redraw();
     }
 });
@@ -127,7 +133,7 @@ var ShapeBase = Base.extend({
     constructor: function (x, y, color, lineWidth) {
         o_currentColor = color;
         this.lineWidth = lineWidth;
-        this.color = color;
+        this.color = "#" + color.replace("#","");
         this.x = x;
         this.y = y;
         this.xEnd = x;
@@ -246,8 +252,7 @@ var Text = ShapeBase.extend({
         this.fontStyle = fontStyle;
         this.fontWeight = fontWeight;
         var fs = parseInt(this.fontSize.replace("px",""));
-        this.xEnd = this.x + (inputText.length*fs)/1.5;
-        console.log(this.xEnd);
+        this.xEnd = this.x + (this.inputText.length*fs)/1.5;
         this.yEnd = this.y+fs;
     },
     draw: function(ctx) {
@@ -261,7 +266,6 @@ var Text = ShapeBase.extend({
         ctx.fillText(this.inputText,bounds.x,bounds.y);
     },
     Edit: function() {
-
         var container = $("#container");
         var textelement = $('<input type="text" editing="true" id="texti"/>');
         textelement.attr("value",this.inputText);
@@ -271,13 +275,27 @@ var Text = ShapeBase.extend({
         textelement.css("font-size",this.fontSize);
         textelement.css("font-style",this.fontStyle);
         textelement.css("font-weight",this.fontWeight);
-        textelement.css("color","#" + this.color);
+        textelement.css("color","#" + this.color.replace("#",""));
+        textelement.css("width",this.calcbounds().width + "px");
         container.append(textelement);
         $("#text_formatter").show();
         $('#colorp').ColorPickerSetColor("#" + this.color);
         $('#colorp').find('div').css('backgroundColor', '#' + this.color);
         o_currentColor =  this.color;
         return;
+    },
+        isPointInShape: function (x, y) {
+        var fs = parseInt(this.fontSize.replace("px",""));
+        var maxx = this.x + (this.inputText.length*fs)/1.5;
+        var maxy = this.y+fs;
+        var minx = this.x;
+        var miny = this.y;
+        if (x > minx-10 && x < maxx+10) {
+            if (y > miny-10 && y < maxy+10) {
+                return true;
+            }
+        }
+        return false;
     }
 })
 
@@ -342,7 +360,10 @@ var Pencil = ShapeBase.extend({
 });
 
 
-
+function Template(name,shapes) {
+    this.name = name;
+    this.shapes = shapes;
+}
 
 function ev_canvas(ev) {
     if (ev.layerX || ev.layerX == 0) { // Firefox
@@ -361,20 +382,31 @@ function ev_canvas(ev) {
         func(ev);
     }
 };
-
 function get_type(thing){
     if(thing===null)return "[object Null]"; // special case
     return Object.prototype.toString.call(thing);
+}
+function createTemplate(shapes){
+    var name=prompt("Please select a name for your template","Untitled");
+    var template = new Template(name,shapes);
+    var option = $("<option></option>");
+    option.html(name);
+    $("#templates").append(option);
 }
 function paintMouseEvents() {
     var tool = this;
     this.started = false;
     tool.points = [];
     this.drawnshape;
-    tool.selected;
+    tool.selected = [];
+    tool.selectedIDs = [];
+    tool.selectedText;
     tool.prevX;
     tool.prevY;
 
+    $("#create_template").click( function() {
+        createTemplate(tool.selected);
+    });
     this.mousedown = function (ev) {
         if( $("#texti").val() ) {
             var text = $("#texti").val();
@@ -390,12 +422,15 @@ function paintMouseEvents() {
             textobject.draw(maincontext);
             }
             else {
-                tool.selected.inputText = $("#texti").val();
-                tool.selected.fontType = $("#texti").css("font-family");
-                tool.selected.fontSize = $("#texti").css("font-size");
-                tool.selected.fontWeight = $("#texti").css("font-weight");
-                tool.selected.fontStyle = $("#texti").css("font-style");
-                tool.selected.color = o_currentColor.replace("#","");
+                tool.selectedText.inputText = $("#texti").val();
+                tool.selectedText.fontType = $("#texti").css("font-family");
+                tool.selectedText.fontSize = $("#texti").css("font-size");
+                tool.selectedText.fontWeight = $("#texti").css("font-weight");
+                tool.selectedText.fontStyle = $("#texti").css("font-style");
+                tool.selectedText.color = "#" + o_currentColor.replace("#","");
+                var fs = parseInt(tool.selectedText.fontSize.replace("px",""));
+                tool.selectedText.xEnd = tool.selectedText.x + (tool.selectedText.inputText.length*fs)/1.5;
+                tool.selectedText.yEnd = tool.selectedText.y+fs;
                 redraw();
             }
             $("#text_formatter").hide();
@@ -407,21 +442,43 @@ function paintMouseEvents() {
         tool.prevX = ev._x;
         tool.prevY = ev._y;
         if (o_CurrentTool === "select") {
+            if(!ctrl_down) {
+                tool.selectedIDs = [];
+                tool.selected = [];
+                tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+                redraw();
+            }
+            var stopping_select = true;
+            //tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
             for (var s in p_drawnShapes[currentBoard]) {
                 if (p_drawnShapes[currentBoard][s].isPointInShape(ev._x, ev._y)) {
                     if(p_drawnShapes[currentBoard][s].inputText) {
                         p_drawnShapes[currentBoard][s].Edit();
                         tool.selected = p_drawnShapes[currentBoard][s];
+                        tool.selectedText = p_drawnShapes[currentBoard][s];
                         return;
                     }
-                    tool.selected = p_drawnShapes[currentBoard][s];
+                    if(!(tool.selectedIDs.indexOf(s) > -1)) {
+                        tool.selected.push(p_drawnShapes[currentBoard][s]);
+                        tool.selectedIDs.push(s);
+                    }
+                    stopping_select = false;
                     var bounds = p_drawnShapes[currentBoard][s].calcbounds();
                     tempcontext.strokeStyle = "#F4D71D";
                     tempcontext.strokeRect(bounds.x - 3, bounds.y - 3, bounds.width + 6, bounds.height + 6);
                     tool.started = true;
-                    return;
+                    if(!ctrl_down) {
+                        return;
+                    }
                 }
             }
+            if(stopping_select) {
+                tool.selectedIDs = [];
+                tool.selected = [];
+                tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+                redraw();
+            }
+            console.log(stopping_select);
             return;
         }
         else if (o_CurrentTool === "text") {
@@ -474,15 +531,21 @@ function paintMouseEvents() {
             currentTool = new Pencil(o_currentColor, o_lineWidth);
             currentTool.setPoints(tool.points);
         } else if (o_CurrentTool === "select") {
-            var bounds = tool.selected.calcbounds();
+            tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+            console.log(ev._x,ev._y);
+
             var xDiff = ev._x - tool.prevX;
             var yDiff = ev._y - tool.prevY;
-            tool.selected.shift(xDiff, yDiff);
-            redraw();
-            tempcontext.strokeStyle = "#F4D71D";
-            bounds = tool.selected.calcbounds();
-            tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
-            tempcontext.strokeRect(bounds.x - 3, bounds.y - 3, bounds.width + 6, bounds.height + 6);
+                for(var els in tool.selected) {
+                    var bounds = tool.selected[els].calcbounds();
+                    tool.selected[els].shift(xDiff, yDiff);
+                    console.log(xDiff, yDiff);
+                    redraw();
+                    tempcontext.strokeStyle = "#F4D71D";
+                    bounds = tool.selected[els].calcbounds();
+                    tempcontext.strokeRect(bounds.x - 3, bounds.y - 3, bounds.width + 6, bounds.height + 6);
+                }
+            console.log(tool.prevX,ev._x);
             tool.prevX = ev._x;
             tool.prevY = ev._y;
             return;
@@ -498,8 +561,8 @@ function paintMouseEvents() {
     // This is called when you release the mouse button.
     this.mouseup = function (ev) {
         $("#texti").focus();
-        if (o_CurrentTool === "select") {
-            tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+        if (o_CurrentTool === "select" ) {
+            //tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
             tool.started = false;
             return;
         }
@@ -509,7 +572,8 @@ function paintMouseEvents() {
             }
             tool.mousemove(ev);
             tool.started = false;
-            updateSurface();
+            tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+            redraw();
             tool.points = [];
         }
     };
