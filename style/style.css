@@ -18,6 +18,10 @@
 }
 canvas {
     cursor:crosshair;
+    width:800px;
+    margin-left:auto;
+    margin-right:auto;
+}
 }
 canvas,canvas:active,canvas:focus {
     cursor:crosshair;
@@ -40,4 +44,28 @@ canvas,canvas:active,canvas:focus {
 
 #boards li a:focus{
     cursor:hand;
+}
+
+input[type="text"] {
+ position: absolute;
+}
+#text_formatter {
+}
+#draghandle {
+    position: absolute;
+
+    z-index: 9999;
+    background-color:red;
+}
+#main {
+    background-color:white;
+    width: 800px ;
+    margin-left:auto;
+    margin-right:auto;
+    border-radius:4px;
+    margin-top:50px;
+}
+body {
+    background-color:#2f4f4f;
+    background-image:url("http://i.imgur.com/U9qBQ.jpg");
 }
