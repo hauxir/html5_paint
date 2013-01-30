@@ -14,23 +14,17 @@ var prev = [];
 var currentBoard = 0;
 
 $("document").ready(function () {
+    $("button").each(function() {
+        $(this).attr("class","btn");
+    });
     $(document).bind('keydown', 'Ctrl', function() {ctrl_down = true;});
     $(document).bind('keyup', 'Ctrl', function() {ctrl_down = false;});
 
     $("#text_formatter").hide();
     $("#texti").css("font-family",$('#fontselector').val() );
-    o_CurrentTool = $("#currentShape").val();
-    $('#currentShape').change(function () {
-
-        o_CurrentTool = $("#currentShape").val();
-        if(o_CurrentTool == "text") {
-        $("#container canvas").css("cursor","text");
-        }
-        else {
-            $("#container canvas").css("cursor","crosshair");
-        }
-        //p_mouseEvents = new paintMouseEvents();
-    });
+    o_CurrentTool = $("#shapechooser button").first().val();
+    $("#shapechooser button").first().addClass('active');
+    $("#boards button").first().addClass('active');
     $('#fontselector').change(function () {
         $("#texti").css("font-family",$('#fontselector').val() );
 
@@ -65,12 +59,32 @@ $("document").ready(function () {
        drawTemplate();
     });
     $("#export").click(function() {
-        var encoded = Base64.encode(JSON.stringify(p_drawnShapes));
-        var decoded = Base64.decode(encoded);
-        console.log(encoded);
-        $("#download").attr("href","data:application/octet-stream;charset=utf-8;base64," + encoded,"skra");
-        $("#download").attr("download","Untitled2.txt");
-        window.location = document.getElementById('download').href;
+        var overlay = jQuery('<div id="overlay"> </div>');
+        overlay.appendTo(document.body);
+        var area = $("<textarea></textarea>");
+        var exbutton = $("<button class='btn'>Export</button>");
+        exbutton.click( function() {
+            area.html(JSON.stringify(p_drawnShapes));
+        });
+        var imbutton = $("<button class='btn'>Import</button>");
+        imbutton.click( function() {
+            var paint_import_data = $("#overlay textarea").val();
+            paint_importJSON(paint_import_data);
+        });
+        var clbutton = $("<button class='btn'>Close</button>");
+        clbutton.click( function() {
+            $("#overlay").remove();
+        });
+        overlay.append(area);
+        overlay.append(exbutton);
+        overlay.append(imbutton);
+        overlay.append(clbutton);
+    });
+    $("#shapechooser button").click(function() {
+        $("#shapechooser button").removeClass('active');
+        $(this).addClass('active');
+        o_CurrentTool = $(this).val();
+
     });
     //MAINCANVAS
     maincanvas = document.getElementById('imageView');
@@ -107,13 +121,58 @@ $("document").ready(function () {
     o_currentColor = $(".colorpicker_hex input").val();
     $('#colorp').ColorPickerSetColor(o_currentColor);
     $('#colorp div').css('backgroundColor', '#' + o_currentColor);
-    $("#boards li a").click( function() {
-        var num = parseInt($(this).attr("id").substring(1));
-        changeBoard(num);
+    $("#boards li button").click( function() {
+        $("#boards li button").removeClass('active');
+        $(this).addClass('active');
+        var num = $(this).html();
+        changeBoard(num-1);
     });
+
+
 });
 
-
+function paint_importJSON(jsondata) {
+    if(!jsondata) { return;}
+    var obj = $.parseJSON(jsondata);
+    var Jboard1 = obj[0];
+    p_drawnShapes = [];
+    for (var i = 0; i < 10; i++) {
+        p_drawnShapes[i] = [];
+    }
+    for(var i in obj) {
+        for(var s in obj[i]) {
+            if(obj[i][s].type === "Line") {
+                //(x, y, x2, y2, color, lineWidth)
+                var line = new Line(obj[i][s].x,obj[i][s].y,obj[i][s].xEnd,obj[i][s].yEnd,obj[i][s].color,obj[i][s].lineWidth);
+                p_drawnShapes[i].push(line);
+            }
+            else if(obj[i][s].type === "Circle") {
+                //(x, y, x2, y2, color, lineWidth)
+                var circle = new Circle(obj[i][s].x,obj[i][s].y,obj[i][s].xEnd,obj[i][s].yEnd,obj[i][s].color,obj[i][s].lineWidth);
+                p_drawnShapes[i].push(circle);
+            }
+            else if(obj[i][s].type === "Rectangle") {
+                //(x, y, x2, y2, color, lineWidth)
+                var rect = new Rectangle(obj[i][s].x,obj[i][s].y,obj[i][s].xEnd,obj[i][s].yEnd,obj[i][s].color,obj[i][s].lineWidth);
+                p_drawnShapes[i].push(rect);
+            }
+            else if(obj[i][s].type === "Text") {
+                //(x, y, x2, y2, color, lineWidth)
+                var txt = new Text(obj[i][s].x,obj[i][s].y,obj[i][s].inputText,
+                    obj[i][s].fontSize,obj[i][s].fontType,obj[i][s].fontStyle,
+                    obj[i][s].fontWeight,obj[i][s].color,obj[i][s].lineWidth);
+                p_drawnShapes[i].push(txt);
+            }
+            else if(obj[i][s].type === "Pencil") {
+                //(x, y, x2, y2, color, lineWidth)
+                var penc = new Pencil(obj[i][s].color,obj[i][s].lineWidth);
+                penc.points = obj[i][s].points;
+                p_drawnShapes[i].push(penc);
+            }
+        }
+    }
+    redraw();
+}
 function changeBoard(boardnum) {
     currentBoard = boardnum;
     tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
@@ -435,6 +494,28 @@ function paintMouseEvents() {
     tool.selectedText;
     tool.prevX;
     tool.prevY;
+    $(document).keydown(function (e) {
+        if (e.keyCode == 46)  {
+            for(var i in p_drawnShapes[currentBoard]) {
+                for(var j in tool.selectedIDs) {
+                    if(i === tool.selectedIDs[j]) {
+                        var element = p_drawnShapes[currentBoard][i];
+                        prev.push(element);
+                        delete p_drawnShapes[currentBoard][i];
+                        delete tool.selectedIDs[j];
+                        tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+                        redraw();
+                    }
+                }
+            }
+            var len = p_drawnShapes[currentBoard].length;
+            for(var i=0;i<len;i++) {
+                if(p_drawnShapes[currentBoard][i] == null) {
+                    p_drawnShapes[currentBoard].splice(i,1);
+                }
+            }
+        }
+    });
 
     $("#create_template").click( function() {
         createTemplate(tool.selected);
@@ -450,6 +531,7 @@ function paintMouseEvents() {
             //(x, y,inputText,fontSize,fontType,fontStyle, color, lineWidth)
             if(!$("#texti").attr("editing")) {
             var textobject = new Text(tool.prevX,tool.prevY,text,fontSize,fontType,fontStyle,fontWeight, o_currentColor, o_lineWidth);
+            textobject.color = "#" + o_currentColor.replace("#","");
             p_drawnShapes[currentBoard].push(textobject);
             textobject.draw(maincontext);
             }

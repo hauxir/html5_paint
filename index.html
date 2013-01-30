@@ -8,6 +8,7 @@
 --></style>
     <head>
         <title>Paint!</title>
+        <link rel="stylesheet" type="text/css" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="./style/style.css"/>
         <link rel="stylesheet" href="css/colorpicker.css" type="text/css" />
     </head>
@@ -16,29 +17,40 @@
     <div id="main">
         <div id="colorp"><div></div>
         </div>
-        <select id="currentShape">
-            <option value="line">Line</option>
-            <option value="rectangle">Rectangle</option>
-            <option value="pencil">Pencil</option>
-            <option value="circle">Circle</option>
-            <option value="select">Select</option>
-            <option value="text">Text</option>
-        </select>
-        <select id="templates">
-        </select>
-        <button id="add_template">Add Template to Canvas</button>
-        <button id="create_template">Create Template</button>
-        <button id="export">Export</button>
-
 
         <ul id="boards">
-            <li><a id="b0">Board 1</a></li>
-            <li><a id="b1">Board 2</a></li>
-            <li><a id="b2">Board 3</a></li>
-            <li><a id="b3">Board 4</a></li>
-            <li><a id="b4">Board 5</a></li>
+            <p>Boards:</p>
+            <li><button class="btn">1</button></li>
+            <li><button class="btn">2</button></li>
+            <li><button class="btn">3</button></li>
+            <li><button class="btn">4</button></li>
+            <li><button class="btn">5</button></li>
+            <li><button class="btn">6</button></li>
+            <li><button class="btn">7</button></li>
+            <li><button class="btn">8</button></li>
+            <li><button class="btn">9</button></li>
+            <li><button class="btn">10</button></li>
         </ul>
 
+        <span id="shapechooser">
+             <p>Shapes:</p>
+
+        <button value="pencil" class="shapebtn" >P</button>
+        <button value="line" class="shapebtn" >\</button>
+        <button value="circle" class="shapebtn" >O</button>
+        <button value="rectangle" class="shapebtn" >#</button>
+        <button value="select" class="shapebtn" >S</button>
+        <button value="text" class="shapebtn" >T</button>
+        </span>
+
+        <span id="templatechooser">
+         <p>Templates:</p>
+        <select id="templates">
+        </select>
+        <button class="btn" id="add_template">Add Template to Canvas</button>
+        <button class="btn" id="create_template">Create Template</button>
+        <button class="btn" id="export">Import/Export</button>
+            </span>
 
         <div id="goat">
         <a href="#" class="tip2">Problem?<span>Hi, There. I am the feature goat and here are some of the features in our on-line whiteboard application <br>
