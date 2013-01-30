@@ -15,26 +15,27 @@
 
     <body>
     <div id="main">
+        <div id="toolbox">
         <div id="colorp"><div></div>
         </div>
-
+        <fieldset>
+            <legend>Boards</legend>
         <ul id="boards">
-            <p>Boards:</p>
-            <li><button class="btn">1</button></li>
-            <li><button class="btn">2</button></li>
-            <li><button class="btn">3</button></li>
-            <li><button class="btn">4</button></li>
-            <li><button class="btn">5</button></li>
-            <li><button class="btn">6</button></li>
-            <li><button class="btn">7</button></li>
-            <li><button class="btn">8</button></li>
-            <li><button class="btn">9</button></li>
-            <li><button class="btn">10</button></li>
+            <li><button >1</button></li>
+            <li><button >2</button></li>
+            <li><button >3</button></li>
+            <li><button >4</button></li>
+            <li><button >5</button></li>
+            <li><button >6</button></li>
+            <li><button >7</button></li>
+            <li><button >8</button></li>
+            <li><button >9</button></li>
+            <li><button >10</button></li>
         </ul>
-
+        </fieldset>
         <span id="shapechooser">
-             <p>Shapes:</p>
-
+        <fieldset id="shapefield">
+            <legend>Shapes</legend>
         <button value="pencil" class="shapebtn" >P</button>
         <button value="line" class="shapebtn" >\</button>
         <button value="circle" class="shapebtn" >O</button>
@@ -42,16 +43,19 @@
         <button value="select" class="shapebtn" >S</button>
         <button value="text" class="shapebtn" >T</button>
         </span>
+    </fieldset>
 
+        <fieldset id="templatefield">
+            <legend>Template</legend>
         <span id="templatechooser">
-         <p>Templates:</p>
         <select id="templates">
         </select>
-        <button class="btn" id="add_template">Add Template to Canvas</button>
-        <button class="btn" id="create_template">Create Template</button>
-        <button class="btn" id="export">Import/Export</button>
+        <button  id="add_template">Add Template to Canvas</button>
+        <button  id="create_template">Create Template</button>
             </span>
+        </fieldset>
 
+        <button  id="export">Import/Export</button>
         <div id="goat">
         <a href="#" class="tip2">Problem?<span>Hi, There. I am the feature goat and here are some of the features in our on-line whiteboard application <br>
             Ctrl + z = undo<br/>
@@ -74,6 +78,7 @@
                 <option value="helvetica">Helvetica</option>
             </select>
         </div>
+        </toolbox>
         <div id="container">
             <canvas id="imageView" width="800" height="600">
             </canvas>

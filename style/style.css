@@ -7,6 +7,7 @@
     width: 36px;
     height: 36px;
     background: url(../images/select.png);
+    float:left;
 }
 #colorp div {
     position: absolute;
@@ -16,9 +17,11 @@
     height: 30px;
     background: url(../images/select.png) center;
 }
+
 canvas {
     cursor:crosshair;
     width:800px;
+    height:600px;
     margin-left:auto;
     margin-right:auto;
 }
@@ -170,8 +173,36 @@ textarea {
 li {
     display:inline;
 }
-li button {
-    font-size:10px !important;
-    font-weight:bold;
-    width:10px;
+button {
+font-size:10px !important;
+font-weight:bold;
+}
+fieldset {
+border:1px solid #ccc;
+padding:1px;
+margin:0;
+height:40px;
+width:auto;
+float:right;
+display:inline-block;
+border-radius:3px;
+}
+fieldset legend {
+font-size:10px;
+padding-left:0px;
+}
+fieldset#shapefield{
+float:left;
+}
+fieldset#templatefield {
+float:left;
+}
+#toolbox {
+margin-bottom:500px;
+}
+#export {
+float:right;
+}
+#toolbox {
+padding bottom:100px;
 }
