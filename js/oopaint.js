@@ -2,7 +2,7 @@ var o_currentColor = "black";
 var o_lineWidth = 5;
 var maincanvas, tempcanvas;
 var maincontext, tempcontext;
-var o_CurrentTool;
+var o_CurrentTool = "pencil";
 var p_mouseEvents;
 var my_templates = [];
 var p_drawnShapes = [];
@@ -128,7 +128,6 @@ $("document").ready(function () {
         changeBoard(num-1);
     });
 
-
 });
 
 function paint_importJSON(jsondata) {
@@ -168,6 +167,11 @@ function paint_importJSON(jsondata) {
                 var penc = new Pencil(obj[i][s].color,obj[i][s].lineWidth);
                 penc.points = obj[i][s].points;
                 p_drawnShapes[i].push(penc);
+            }
+            else if(obj[i][s].type === "Equation") {
+                //(x, y, x2, y2, color, lineWidth)
+                var eq = new Equation(obj[i][s].x,obj[i][s].y,obj[i][s].url);
+                p_drawnShapes[i].push(eq);
             }
         }
     }
@@ -442,6 +446,23 @@ var Pencil = ShapeBase.extend({
     }
 });
 
+var Equation = ShapeBase.extend({
+    constructor: function (x, y, url) {
+        this.base(x, y, o_currentColor, o_lineWidth);
+        this.type = "Equation";
+        this.url = url;
+        this.xEnd = this.x+30;
+        this.yEnd = this.y+30;
+    },
+    draw: function (ctx) {
+        var img = new Image();
+        img.src = this.url
+        var xval = this.x;
+        var yval = this.y;
+        img.onload = function(){ ctx.drawImage(img,xval,yval); };
+        ctx.stroke();
+    }
+});
 
 function Template(name,shapes) {
     this.name = name;
@@ -467,6 +488,10 @@ function ev_canvas(ev) {
     }
 };
 function createTemplate(shapes){
+    if(shapes.length === 0) {
+        alert("You have to select some items!");
+        return;
+    }
     var name=prompt("Please select a name for your template","Untitled");
     var template = new Template(name,shapes);
     var option = $("<option></option>");
@@ -478,11 +503,20 @@ function createTemplate(shapes){
 function drawTemplate() {
     var selected = parseInt($("#templates :selected").val());
     var currentTemplate = my_templates[selected];
-    var shapes = currentTemplate.shapes;
-    for(var i in shapes) {
-        p_drawnShapes[currentBoard].push(shapes[i]);
-        shapes[i].draw(maincontext);
+    var deepcopy = jQuery.extend(true, {}, currentTemplate);
+    deepcopy.shapes = jQuery.extend(true, {}, currentTemplate.shapes);
+    for(var i in deepcopy.shapes) {
+        var item = deepcopy.shapes[i];
+        var deepCopyObject = jQuery.extend(true, {}, deepcopy.shapes[i]);
+        deepcopy.shapes[i] = deepCopyObject;
     }
+    var shapes = deepcopy.shapes;
+    for(var i in deepcopy.shapes) {
+        p_drawnShapes[currentBoard].push(deepcopy.shapes[i]);
+        deepcopy.shapes[i].draw(maincontext);
+    }
+    tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+    redraw();
 }
 function paintMouseEvents() {
     var tool = this;
@@ -521,6 +555,32 @@ function paintMouseEvents() {
         createTemplate(tool.selected);
     });
     this.mousedown = function (ev) {
+        if(o_CurrentTool == "equation") {
+            $("#eqoverlay").remove();
+            var overlay = jQuery('<div id="eqoverlay"> </div>');
+            overlay.appendTo(document.body);
+            var clbutton = $("<button class='btn'>Close</button>");
+            var paragraph = $("<p>Select the symbol you want to add</p>");
+            var symbols = $("#symbols");
+            symbols.css("visbility","normal");
+            clbutton.click( function() {
+                $("#overlay").remove();
+            });
+            overlay.append(symbols.html());
+            overlay.append(paragraph);
+            overlay.append(clbutton);
+            $("#eqoverlay img").click(function() {
+                $("#eqoverlay").remove();
+                var imglocation = $(this).attr("src");
+                var eq = new Equation(ev._x,ev._y,imglocation);
+                p_drawnShapes[currentBoard].push(eq);
+                tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+                redraw();
+            });
+            $("#eqoverlay button").click(function() {
+                $("#eqoverlay").remove();
+            });
+        }
         if( $("#texti").val() ) {
             var text = $("#texti").val();
             console.log(text);
@@ -567,10 +627,17 @@ function paintMouseEvents() {
             for (var s in p_drawnShapes[currentBoard]) {
                 if (p_drawnShapes[currentBoard][s].isPointInShape(ev._x, ev._y)) {
                     if(p_drawnShapes[currentBoard][s].inputText) {
-                        p_drawnShapes[currentBoard][s].Edit();
-                        tool.selected = p_drawnShapes[currentBoard][s];
-                        tool.selectedText = p_drawnShapes[currentBoard][s];
-                        return;
+                        $("#editbutton").remove();
+                        var button = $("<button class='btn' id='editbutton'>Edit text</button>");
+                        button.click(function() {
+                            $("#editbutton").remove();
+                            p_drawnShapes[currentBoard][s].Edit();
+                            tool.selected = p_drawnShapes[currentBoard][s];
+                            tool.selectedText = p_drawnShapes[currentBoard][s];
+                            $("#texti").focus();
+                            return;
+                        });
+                        $("#templatefield").after(button);
                     }
                     if(!(tool.selectedIDs.indexOf(s) > -1)) {
                         tool.selected.push(p_drawnShapes[currentBoard][s]);
@@ -586,6 +653,8 @@ function paintMouseEvents() {
                     }
                 }
             }
+            $("#editbutton").remove();
+
             if(stopping_select) {
                 tool.selectedIDs = [];
                 tool.selected = [];
@@ -604,6 +673,7 @@ function paintMouseEvents() {
             textelement.css("color","#" + o_currentColor.replace("#",""));
             container.append(textelement);
             $("#text_formatter").show();
+            $("#texti").focus();
             return;
         }
         $("#text_formatter").hide();
@@ -611,20 +681,11 @@ function paintMouseEvents() {
         tool.x0 = ev._x;
         tool.y0 = ev._y;
     };
-
+    var img = new Image();
 
     this.mousemove = function (ev) {
         //$("#draghandle").remove();
         if (!tool.started) {
-            if (o_CurrentTool === "select") {
-                for (var s in p_drawnShapes[currentBoard]) {
-                    if (p_drawnShapes[currentBoard][s].isPointInShape(ev._x, ev._y)) {
-                        if(p_drawnShapes[currentBoard][s].inputText) {
-                            //ADDA DRAGHANDLE
-                        }
-                    }
-                }
-            }
             return;
         }
         var currentTool;
@@ -653,7 +714,7 @@ function paintMouseEvents() {
                 for(var els in tool.selected) {
                     var bounds = tool.selected[els].calcbounds();
                     tool.selected[els].shift(xDiff, yDiff);
-                    console.log(xDiff, yDiff);
+                    console.log(tool.selected[els]);
                     redraw();
                     tempcontext.strokeStyle = "#F4D71D";
                     bounds = tool.selected[els].calcbounds();
@@ -663,8 +724,8 @@ function paintMouseEvents() {
             tool.prevX = ev._x;
             tool.prevY = ev._y;
             return;
-        } else {
-            alert("ERROR TOOL NOT FOUND");
+        }
+        else {
             return;
         }
         tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);

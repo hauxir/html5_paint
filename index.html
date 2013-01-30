@@ -42,6 +42,7 @@
         <button value="rectangle" class="shapebtn" >#</button>
         <button value="select" class="shapebtn" >S</button>
         <button value="text" class="shapebtn" >T</button>
+        <button value="equation" class="shapebtn">E</button>
         </span>
     </fieldset>
 
@@ -63,8 +64,10 @@
             Ctrl + Hold mouse1 = Use for selecting many shapes and for moving many shapes<br/></span></a><img title="Feature goat!" alt="Tips & tricks" src="http://knutur.is/includes/featgoat.jpg" />
             <p>for help ask goat</p>
         </div>
+            <fieldset id="text_formatter">
+                <legend>Format Text</legend>
 
-        <div id="text_formatter">
+                <div>
             <input type="button" id="decsize" value="-"/>
             <input type="button" id="incsize" value="+"/>
             <input type="button" id="boldbtn" value="B"/>
@@ -78,13 +81,26 @@
                 <option value="helvetica">Helvetica</option>
             </select>
         </div>
-        </toolbox>
+                </fieldset>
+        </div>
         <div id="container">
             <canvas id="imageView" width="800" height="600">
             </canvas>
         </div>
+        </fieldset>
 
     </div>
+    <ul id="symbols">
+        <li><img src="./symbols/ekkisamasem.png"/></li>
+        <li><img src="./symbols/infin.png"/></li>
+        <li><img src="./symbols/mjaftog.png"></li>
+        <li><img src="./symbols/sjaftog.png"></li>
+        <li><img src="./symbols/ujaftog.png"></li>
+        <li><img src="./symbols/realn.png"/></li>
+        <li><img src="./symbols/sigma.png"/></li>
+        <li><img src="./symbols/sqrt.png"/></li>
+        <li><img src="./symbols/pi.png"/></li>
+    </ul>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script type="text/javascript" src="./js/colorpicker.js"></script>
     <script type="text/javascript" src="./js/base64.js"></script>

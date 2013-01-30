@@ -52,14 +52,6 @@ canvas,canvas:active,canvas:focus {
 input[type="text"] {
  position: absolute;
 }
-#text_formatter {
-}
-#draghandle {
-    position: absolute;
-
-    z-index: 9999;
-    background-color:red;
-}
 #main {
     background-color:white;
     width: 800px ;
@@ -141,7 +133,16 @@ a.tip2:hover span:after {
     height: 300px;
     position: absolute;
 }
-
+#eqoverlay {
+    border: 1px solid black;
+    background: white;
+    width: 400px;
+    left: 50%;
+    top: 75px;
+    margin-left: -200px;
+    height: 75px;
+    position: absolute;
+}
 textarea {
     resize:none;
     height:240px;
@@ -187,6 +188,11 @@ float:right;
 display:inline-block;
 border-radius:3px;
 }
+#text_formatter {
+    float:left;
+    width:250px;
+    margin-left:7px;
+}
 fieldset legend {
 font-size:10px;
 padding-left:0px;
@@ -198,11 +204,31 @@ fieldset#templatefield {
 float:left;
 }
 #toolbox {
-margin-bottom:500px;
+margin-bottom:100px;
 }
 #export {
 float:right;
 }
-#toolbox {
-padding bottom:100px;
+
+select {
+    width:170px;
+    font-size:10px;
+}
+input[type="text"] {
+    height:auto;
+    width:auto;
+}
+
+#editbutton {
+    float:left;
+    margin-left:100px;
+    margin-top:15px;
+}
+#symbols {
+    visibility:hidden;
+}
+
+img {
+    width:30px;
+    height:30px;
 }
