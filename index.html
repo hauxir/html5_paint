@@ -1,133 +1,265 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
-    <head>
-        <title>Paint!</title>
-        <link rel="stylesheet" type="text/css" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css"/>
-        <link rel="stylesheet" type="text/css" href="./style/style.css"/>
-        <link rel="stylesheet" href="css/colorpicker.css" type="text/css" />
-        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-    </head>
+<head>
+    <title>
+        Paint!
+    </title>
+    <link rel="stylesheet" type="text/css" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css"/>
+    <link rel="stylesheet" type="text/css" href="./style/style.css"/>
+    <link rel="stylesheet" href="css/colorpicker.css" type="text/css" />
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+</head>
 
-    <body>
+<body>
 
-    <div id="main">
- <div id="goatadvice">
-            Hi, There. I am the feature goat and here are some of the features in our on-line whiteboard application <br>
-            KEY BINDINGS <br/>
-            Ctrl + z = undo<br/>
-            Ctrl + y = redo<br/>
-            Hold Ctrl + Hold mouse1 = for moving many shapes<br/>
-            Ctil + click = select multiple items<br/>
-            delete button = delete selected item(s)<br/>
-            <br/>
-            SAVE/LOAD Files<br/>
-            To save your project use the export feature then copy the text generated to<br/>
-            your favorite text editor and save under a file name of your choice.<br/>
-            This will save all drawings on all your boards andthen later to load<br/>
-            your project just copy the text back from your text file<br/>
-            and hit import. If you must have a picture file we suggest using<br/>
-            snipping tool(windows build-in), print screen or something of that sort.<br/>
+<div id="main">
+<div id="goatadvice">
+    Hi, There. I am the feature goat and here are some of the features in our on-line whiteboard application
+    <br>
+    KEY BINDINGS
+    <br/>
+    Ctrl + z = undo
+    <br/>
+    Ctrl + y = redo
+    <br/>
+    Hold Ctrl + Hold mouse1 = for moving many shapes
+    <br/>
+    Ctil + click = select multiple items
+    <br/>
+    delete button = delete selected item(s)
+    <br/>
+    <br/>
+    SAVE/LOAD Files
+    <br/>
+    To save your project use the export feature then copy the text generated to
+    <br/>
+    your favorite text editor and save under a file name of your choice.
+    <br/>
+    This will save all drawings on all your boards andthen later to load
+    <br/>
+    your project just copy the text back from your text file
+    <br/>
+    and hit import. If you must have a picture file we suggest using
+    <br/>
+    snipping tool(windows build-in), print screen or something of that sort.
+    <br/>
 
-            <br/>
-            TEMPLATES<br/>
-            You can make a template of custom shapes that you have created<br/>
-            out of many shapes.<br/>
-            Fyrst make sure you have the select tool active<br/>
-            then Ctil + click to select multiple items<br/>
-            and then hit create template to give it a name.<br/>
-            Now you should be able to use your pre made item on all boards.<br/>
+    <br/>
+    TEMPLATES
+    <br/>
+    You can make a template of custom shapes that you have created
+    <br/>
+    out of many shapes.
+    <br/>
+    Fyrst make sure you have the select tool active
+    <br/>
+    then Ctil + click to select multiple items
+    <br/>
+    and then hit create template to give it a name.
+    <br/>
+    Now you should be able to use your pre made item on all boards.
+    <br/>
 
+</div>
+<div id="toolbox">
+    <div id="colorp">
+        <div>
         </div>
-        <div id="toolbox">
-        <div id="colorp"><div></div>
-        </div>
-        <fieldset>
-            <legend>Boards</legend>
+    </div>
+    <fieldset>
+        <legend>
+            Boards
+        </legend>
         <ul id="boards">
-            <li><button >1</button></li>
-            <li><button >2</button></li>
-            <li><button >3</button></li>
-            <li><button >4</button></li>
-            <li><button >5</button></li>
-            <li><button >6</button></li>
-            <li><button >7</button></li>
-            <li><button >8</button></li>
-            <li><button >9</button></li>
-            <li><button >10</button></li>
+            <li>
+                <button >
+                    1
+                </button>
+            </li>
+            <li>
+                <button >
+                    2
+                </button>
+            </li>
+            <li>
+                <button >
+                    3
+                </button>
+            </li>
+            <li>
+                <button >
+                    4
+                </button>
+            </li>
+            <li>
+                <button >
+                    5
+                </button>
+            </li>
+            <li>
+                <button >
+                    6
+                </button>
+            </li>
+            <li>
+                <button >
+                    7
+                </button>
+            </li>
+            <li>
+                <button >
+                    8
+                </button>
+            </li>
+            <li>
+                <button >
+                    9
+                </button>
+            </li>
+            <li>
+                <button >
+                    10
+                </button>
+            </li>
         </ul>
+    </fieldset>
+    <div id="shapechooser">
+        <fieldset id="shapefield">
+            <legend>
+                Shapes
+            </legend>
+            <button value="pencil" class="shapebtn" >
+                &#9998;
+            </button>
+            <button value="line" class="shapebtn" >
+                \
+            </button>
+            <button value="circle" class="shapebtn" >
+                O
+            </button>
+            <button value="rectangle" class="shapebtn" >
+                &#9744;
+            </button>
+            <button value="select" class="shapebtn" >
+                &#9769;
+            </button>
+            <button value="text" class="shapebtn" >
+                &#913;
+            </button>
+            <button value="equation" class="shapebtn">
+                &#8721;
+            </button>
         </fieldset>
-        <div id="shapechooser">
-            <fieldset id="shapefield">
-                <legend>Shapes</legend>
-            <button value="pencil" class="shapebtn" >&#9998;</button>
-            <button value="line" class="shapebtn" >\</button>
-            <button value="circle" class="shapebtn" >O</button>
-            <button value="rectangle" class="shapebtn" >&#9744;</button>
-            <button value="select" class="shapebtn" >&#9769;</button>
-            <button value="text" class="shapebtn" >&#913;</button>
-            <button value="equation" class="shapebtn">&#8721;</button>
-                </fieldset>
-        </div>
-            <a href="#" class="tip2"><img title="Feature goat!" alt="Tips &#38; tricks" class="tip2" src="./images/featgoat.jpg" />
-               </a>
+    </div>
+    <a href="#" class="tip2">
+        <img title="Feature goat!" alt="Tips &#38; tricks" class="tip2" src="./images/featgoat.jpg" />
+    </a>
 
-        <fieldset id="templatefield">
-            <legend>Template</legend>
+    <fieldset id="templatefield">
+        <legend>
+            Template
+        </legend>
         <div id="templatechooser">
-        <select id="templates">
-            <option></option>
-        </select>
-        <button  id="add_template">Add Template to Canvas</button>
-        <button  id="create_template">Create Template</button>
-            </div>
-        </fieldset>
+            <select id="templates">
+                <option>
+                </option>
+            </select>
+            <button  id="add_template">
+                Add Template to Canvas
+            </button>
+            <button  id="create_template">
+                Create Template
+            </button>
+        </div>
+    </fieldset>
 
-        <button  id="export">Import/Export</button>
+    <button  id="export">
+        Import/Export
+    </button>
 
-            <fieldset id="text_formatter">
-                <legend>Format Text</legend>
+    <fieldset id="text_formatter">
+        <legend>
+            Format Text
+        </legend>
 
-                <div>
+        <div>
             <input type="button" id="decsize" value="-"/>
             <input type="button" id="incsize" value="+"/>
             <input type="button" id="boldbtn" value="B"/>
             <input type="button" id="itbtn" value="I"/>
             <select id="fontselector">
-                <option value="Calibri">Calibri</option>
-                <option value="times">Times New Roman</option>
-                <option value="comic sans ms">Comic Sans</option>
-                <option value="arial">Arial</option>
-                <option value="courier new">Courier New</option>
-                <option value="helvetica">Helvetica</option>
+                <option value="Calibri">
+                    Calibri
+                </option>
+                <option value="times">
+                    Times New Roman
+                </option>
+                <option value="comic sans ms">
+                    Comic Sans
+                </option>
+                <option value="arial">
+                    Arial
+                </option>
+                <option value="courier new">
+                    Courier New
+                </option>
+                <option value="helvetica">
+                    Helvetica
+                </option>
             </select>
         </div>
-                </fieldset>
-        </div>
-        <div id="container">
-            <canvas id="imageView" width="800" height="600">
-            </canvas>
-        </div>
+    </fieldset>
+</div>
+<div id="container">
+    <canvas id="imageView" width="800" height="600">
+    </canvas>
+</div>
 
-    </div>
-    <ul id="symbols">
-        <li><img alt="ekkisamasem" src="./symbols/ekkisamasem.png"/></li>
-        <li><img alt="infinity" src="./symbols/infin.png"/></li>
-        <li><img alt="meq" src="./symbols/mjaftog.png"/></li>
-        <li><img alt="sjaftog" src="./symbols/sjaftog.png"/></li>
-        <li><img alt="ujaftog" src="./symbols/ujaftog.png"/></li>
-        <li><img alt="realn" src="./symbols/realn.png"/></li>
-        <li><img alt="sigma" src="./symbols/sigma.png"/></li>
-        <li><img alt="sqrt" src="./symbols/sqrt.png"/></li>
-        <li><img alt="pi" src="./symbols/pi.png"/></li>
-    </ul>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-    <script type="text/javascript" src="./js/colorpicker.js"></script>
-    <script type="text/javascript" src="./js/eye.js"></script>
-    <script type="text/javascript" src="./js/utils.js"></script>
-    <script type="text/javascript" src="./js/layout.js?ver=1.0.2"></script>
-    <script type="text/javascript" src="./js/Base.js"></script>
-    <script type="text/javascript" src="./js/oopaint.js"></script>
+</div>
+<ul id="symbols">
+    <li>
+        <img alt="ekkisamasem" src="./symbols/ekkisamasem.png"/>
+    </li>
+    <li>
+        <img alt="infinity" src="./symbols/infin.png"/>
+    </li>
+    <li>
+        <img alt="meq" src="./symbols/mjaftog.png"/>
+    </li>
+    <li>
+        <img alt="sjaftog" src="./symbols/sjaftog.png"/>
+    </li>
+    <li>
+        <img alt="ujaftog" src="./symbols/ujafntog.png"/>
+    </li>
+    <li>
+        <img alt="realn" src="./symbols/realn.png"/>
+    </li>
+    <li>
+        <img alt="sigma" src="./symbols/sigma.png"/>
+    </li>
+    <li>
+        <img alt="sqrt" src="./symbols/sqrt.png"/>
+    </li>
+    <li>
+        <img alt="pi" src="./symbols/pi.png"/>
+    </li>
+</ul>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js">
+</script>
+<script type="text/javascript" src="./js/colorpicker.js">
+</script>
+<script type="text/javascript" src="./js/eye.js">
+</script>
+<script type="text/javascript" src="./js/utils.js">
+</script>
+<script type="text/javascript" src="./js/layout.js?ver=1.0.2">
+</script>
+<script type="text/javascript" src="./js/Base.js">
+</script>
+<script type="text/javascript" src="./js/oopaint.js">
+</script>
 
-    </body>
+</body>
 </html>
