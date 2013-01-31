@@ -14,6 +14,7 @@ var prev = [];
 var currentBoard = 0;
 
 $("document").ready(function () {
+    $("select").html("");
     $("button").each(function () {
         $(this).attr("class", "btn");
     });
@@ -149,25 +150,23 @@ function paint_importJSON(jsondata) {
     for (var i in obj) {
         for (var s in obj[i]) {
             if (obj[i][s].type === "Line") {
-                //(x, y, x2, y2, color, lineWidth)
-                var line = new Line(obj[i][s].x, obj[i][s].y, obj[i][s].xEnd, obj[i][s].yEnd, obj[i][s].color, obj[i][s].lineWidth);
+                var line = new Line(obj[i][s].x, obj[i][s].y,
+                    obj[i][s].xEnd, obj[i][s].yEnd, obj[i][s].color, obj[i][s].lineWidth);
                 p_drawnShapes[i].push(line);
             } else if (obj[i][s].type === "Circle") {
-                //(x, y, x2, y2, color, lineWidth)
-                var circle = new Circle(obj[i][s].x, obj[i][s].y, obj[i][s].xEnd, obj[i][s].yEnd, obj[i][s].color, obj[i][s].lineWidth);
+                var circle = new Circle(obj[i][s].x, obj[i][s].y,
+                    obj[i][s].xEnd, obj[i][s].yEnd, obj[i][s].color, obj[i][s].lineWidth);
                 p_drawnShapes[i].push(circle);
             } else if (obj[i][s].type === "Rectangle") {
-                //(x, y, x2, y2, color, lineWidth)
-                var rect = new Rectangle(obj[i][s].x, obj[i][s].y, obj[i][s].xEnd, obj[i][s].yEnd, obj[i][s].color, obj[i][s].lineWidth);
+                var rect = new Rectangle(obj[i][s].x, obj[i][s].y, obj[i][s].xEnd,
+                    obj[i][s].yEnd, obj[i][s].color, obj[i][s].lineWidth);
                 p_drawnShapes[i].push(rect);
             } else if (obj[i][s].type === "Text") {
-                //(x, y, x2, y2, color, lineWidth)
                 var txt = new Text(obj[i][s].x, obj[i][s].y, obj[i][s].inputText,
                     obj[i][s].fontSize, obj[i][s].fontType, obj[i][s].fontStyle,
                     obj[i][s].fontWeight, obj[i][s].color, obj[i][s].lineWidth);
                 p_drawnShapes[i].push(txt);
             } else if (obj[i][s].type === "Pencil") {
-                //(x, y, x2, y2, color, lineWidth)
                 var penc = new Pencil(obj[i][s].color, obj[i][s].lineWidth);
                 penc.points = obj[i][s].points;
                 p_drawnShapes[i].push(penc);
@@ -183,7 +182,7 @@ function paint_importJSON(jsondata) {
 
 function changeBoard(boardnum) {
     currentBoard = boardnum;
-    tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+    clearTempCtx();
     redraw();
 };
 
@@ -194,7 +193,7 @@ $(document).keydown(function (e) {
         if (value) {
             prev.push(value);
         }
-        tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+        clearTempCtx();
         redraw();
     }
 });
@@ -206,7 +205,7 @@ $(document).keydown(function (e) {
         if (value) {
             p_drawnShapes[currentBoard].push(value);
         }
-        tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+        clearTempCtx();
         redraw();
     }
 });
@@ -351,7 +350,6 @@ var Text = ShapeBase.extend({
         ctx.fillStyle = this.color;
         ctx.lineWidth = this.lineWidth;
         ctx.font = this.fontStyle + " " + this.fontWeight + " " + this.fontSize + " " + this.fontType;
-        console.log(ctx.font);
         var bounds = this.calcbounds();
         ctx.textBaseline = "top";
         ctx.fillText(this.inputText, bounds.x, bounds.y);
@@ -474,7 +472,6 @@ var Equation = ShapeBase.extend({
 function Template(name, shapes) {
     this.name = name;
     this.shapes = shapes;
-    console.log(this);
 }
 
 function ev_canvas(ev) {
@@ -500,8 +497,13 @@ function createTemplate(shapes) {
         alert("You have to select some items!");
         return;
     }
+    var copiedShapes = [];
+    for(var s in shapes) {
+        var deepcopy = jQuery.extend(true, {}, shapes[s]);
+        copiedShapes.push(deepcopy);
+    }
     var name = prompt("Please select a name for your template", "Untitled");
-    var template = new Template(name, shapes);
+    var template = new Template(name, copiedShapes);
     var option = $("<option></option>");
     option.attr("value", my_templates.length);
     my_templates.push(template);
@@ -524,7 +526,7 @@ function drawTemplate() {
         p_drawnShapes[currentBoard].push(deepcopy.shapes[i]);
         deepcopy.shapes[i].draw(maincontext);
     }
-    tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+    clearTempCtx();
     redraw();
 }
 
@@ -547,7 +549,7 @@ function paintMouseEvents() {
                         prev.push(element);
                         delete p_drawnShapes[currentBoard][i];
                         delete tool.selectedIDs[j];
-                        tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+                        clearTempCtx();
                         redraw();
                     }
                 }
@@ -584,16 +586,16 @@ function paintMouseEvents() {
                 var imglocation = $(this).attr("src");
                 var eq = new Equation(ev._x, ev._y, imglocation);
                 p_drawnShapes[currentBoard].push(eq);
-                tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+                clearTempCtx();
                 redraw();
             });
             $("#eqoverlay button").click(function () {
                 $("#eqoverlay").remove();
             });
+            return;
         }
         if ($("#text_editor").val()) {
             var text = $("#text_editor").val();
-            console.log(text);
             var fontSize = $("#text_editor").css("font-size");
             var fontType = $("#text_editor").css("font-family");
             var fontWeight = $("#text_editor").css("font-weight");
@@ -628,11 +630,11 @@ function paintMouseEvents() {
             if (!ctrl_down) {
                 tool.selectedIDs = [];
                 tool.selected = [];
-                tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+                clearTempCtx();
                 redraw();
             }
             var stopping_select = true;
-            //tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+            //clearTempCtx();
             for (var s in p_drawnShapes[currentBoard]) {
                 if (p_drawnShapes[currentBoard][s].isPointInShape(ev._x, ev._y)) {
                     if (p_drawnShapes[currentBoard][s].inputText) {
@@ -667,13 +669,11 @@ function paintMouseEvents() {
             if (stopping_select) {
                 tool.selectedIDs = [];
                 tool.selected = [];
-                tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+                clearTempCtx();
                 redraw();
             }
-            console.log(stopping_select);
             return;
         } else if (o_CurrentTool === "text") {
-
             var container = $("#container");
             var textelement = $('<input type="text" id="text_editor"/>');
             textelement.css("top", ev._y + "px");
@@ -713,28 +713,25 @@ function paintMouseEvents() {
             currentTool = new Pencil(o_currentColor, o_lineWidth);
             currentTool.setPoints(tool.points);
         } else if (o_CurrentTool === "select") {
-            tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
-            console.log(ev._x, ev._y);
+            clearTempCtx();
 
             var xDiff = ev._x - tool.prevX;
             var yDiff = ev._y - tool.prevY;
             for (var els in tool.selected) {
                 var bounds = tool.selected[els].calcbounds();
                 tool.selected[els].shift(xDiff, yDiff);
-                console.log(tool.selected[els]);
                 redraw();
                 tempcontext.strokeStyle = "#F4D71D";
                 bounds = tool.selected[els].calcbounds();
                 tempcontext.strokeRect(bounds.x - 3, bounds.y - 3, bounds.width + 6, bounds.height + 6);
             }
-            console.log(tool.prevX, ev._x);
             tool.prevX = ev._x;
             tool.prevY = ev._y;
             return;
         } else {
             return;
         }
-        tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+        clearTempCtx();
         currentTool.draw(tempcontext);
         tool.drawnshape = currentTool;
     };
@@ -743,7 +740,7 @@ function paintMouseEvents() {
     this.mouseup = function (ev) {
         $("#text_editor").focus();
         if (o_CurrentTool === "select") {
-            //tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+            //clearTempCtx();
             tool.started = false;
             return;
         }
@@ -753,7 +750,7 @@ function paintMouseEvents() {
             }
             tool.mousemove(ev);
             tool.started = false;
-            tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+            clearTempCtx();
             redraw();
             tool.points = [];
         }
@@ -762,7 +759,7 @@ function paintMouseEvents() {
 
 function updateSurface() {
     maincontext.drawImage(tempcanvas, 0, 0);
-    tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
+    clearTempCtx();
 };
 
 function redraw() {
@@ -772,6 +769,6 @@ function redraw() {
     }
 };
 
-function clearTemp() {
+function clearTempCtx() {
     tempcontext.clearRect(0, 0, tempcanvas.width, tempcanvas.height);
 }

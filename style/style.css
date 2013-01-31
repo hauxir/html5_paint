@@ -1,3 +1,7 @@
+#container { position: relative; }
+#imageView { border: 1px solid #000; }
+#imageTemp { position: absolute; top: 1px; left: 1px; }
+
 #imageView {
     border: 1px solid black;
 
@@ -231,4 +235,10 @@ button {
     margin-top:100px;
     margin-left:auto;
     margin-right:auto;
+}
+form {
+    margin:0;
+    padding:0;
+    top:0;
+    bottom:0;
 }

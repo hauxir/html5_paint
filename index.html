@@ -1,22 +1,19 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<style type="text/css"><!--
-#container { position: relative; }
-#imageView { border: 1px solid #000; }
-#imageTemp { position: absolute; top: 1px; left: 1px; }
---></style>
+
     <head>
         <title>Paint!</title>
         <link rel="stylesheet" type="text/css" href="http://twitter.github.com/bootstrap/1.4.0/bootstrap.min.css"/>
         <link rel="stylesheet" type="text/css" href="./style/style.css"/>
         <link rel="stylesheet" href="css/colorpicker.css" type="text/css" />
+        <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
     </head>
 
     <body>
 
     <div id="main">
- <span id="goatadvice">Hi, There. I am the feature goat and here are some of the features in our on-line whiteboard application <br>
+ <div id="goatadvice">
+            Hi, There. I am the feature goat and here are some of the features in our on-line whiteboard application <br>
             KEY BINDINGS <br/>
             Ctrl + z = undo<br/>
             Ctrl + y = redo<br/>
@@ -41,7 +38,7 @@
             and then hit create template to give it a name.<br/>
             Now you should be able to use your pre made item on all boards.<br/>
 
-        </span>
+        </div>
         <div id="toolbox">
         <div id="colorp"><div></div>
         </div>
@@ -60,30 +57,30 @@
             <li><button >10</button></li>
         </ul>
         </fieldset>
-        <span id="shapechooser">
-        <fieldset id="shapefield">
-            <legend>Shapes</legend>
-        <button value="pencil" class="shapebtn" >&#9998;</button>
-        <button value="line" class="shapebtn" >\</button>
-        <button value="circle" class="shapebtn" >O</button>
-        <button value="rectangle" class="shapebtn" >&#9744;</button>
-        <button value="select" class="shapebtn" >&#9769;</button>
-        <button value="text" class="shapebtn" >&#913;</button>
-        <button value="equation" class="shapebtn">&#8721;</button>
-            </fieldset>
-        </span>
-    </fieldset>
-            <a href="#" class="tip2"><img title="Feature goat!" alt="Tips & tricks" class="tip2" src="http://knutur.is/includes/featgoat.jpg" />
+        <div id="shapechooser">
+            <fieldset id="shapefield">
+                <legend>Shapes</legend>
+            <button value="pencil" class="shapebtn" >&#9998;</button>
+            <button value="line" class="shapebtn" >\</button>
+            <button value="circle" class="shapebtn" >O</button>
+            <button value="rectangle" class="shapebtn" >&#9744;</button>
+            <button value="select" class="shapebtn" >&#9769;</button>
+            <button value="text" class="shapebtn" >&#913;</button>
+            <button value="equation" class="shapebtn">&#8721;</button>
+                </fieldset>
+        </div>
+            <a href="#" class="tip2"><img title="Feature goat!" alt="Tips &#38; tricks" class="tip2" src="./images/featgoat.jpg" />
                </a>
 
         <fieldset id="templatefield">
             <legend>Template</legend>
-        <span id="templatechooser">
+        <div id="templatechooser">
         <select id="templates">
+            <option></option>
         </select>
         <button  id="add_template">Add Template to Canvas</button>
         <button  id="create_template">Create Template</button>
-            </span>
+            </div>
         </fieldset>
 
         <button  id="export">Import/Export</button>
@@ -111,27 +108,25 @@
             <canvas id="imageView" width="800" height="600">
             </canvas>
         </div>
-        </fieldset>
 
     </div>
     <ul id="symbols">
-        <li><img src="./symbols/ekkisamasem.png"/></li>
-        <li><img src="./symbols/infin.png"/></li>
-        <li><img src="./symbols/mjaftog.png"></li>
-        <li><img src="./symbols/sjaftog.png"></li>
-        <li><img src="./symbols/ujaftog.png"></li>
-        <li><img src="./symbols/realn.png"/></li>
-        <li><img src="./symbols/sigma.png"/></li>
-        <li><img src="./symbols/sqrt.png"/></li>
-        <li><img src="./symbols/pi.png"/></li>
+        <li><img alt="ekkisamasem" src="./symbols/ekkisamasem.png"/></li>
+        <li><img alt="infinity" src="./symbols/infin.png"/></li>
+        <li><img alt="meq" src="./symbols/mjaftog.png"/></li>
+        <li><img alt="sjaftog" src="./symbols/sjaftog.png"/></li>
+        <li><img alt="ujaftog" src="./symbols/ujaftog.png"/></li>
+        <li><img alt="realn" src="./symbols/realn.png"/></li>
+        <li><img alt="sigma" src="./symbols/sigma.png"/></li>
+        <li><img alt="sqrt" src="./symbols/sqrt.png"/></li>
+        <li><img alt="pi" src="./symbols/pi.png"/></li>
     </ul>
-    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
     <script type="text/javascript" src="./js/colorpicker.js"></script>
-    <script type="text/javascript" src="./js/base64.js"></script>
     <script type="text/javascript" src="./js/eye.js"></script>
     <script type="text/javascript" src="./js/utils.js"></script>
     <script type="text/javascript" src="./js/layout.js?ver=1.0.2"></script>
-    <script src="./js/Base.js"></script>
+    <script type="text/javascript" src="./js/Base.js"></script>
     <script type="text/javascript" src="./js/oopaint.js"></script>
 
     </body>
